@@ -13,7 +13,7 @@ public class MessageQueue {
    }
 
    public synchronized String take() throws InterruptedException {
-      if (messages.isEmpty()) {
+      while (messages.isEmpty()) {
          this.wait();
       }
 
