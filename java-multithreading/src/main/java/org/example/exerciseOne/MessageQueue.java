@@ -12,15 +12,14 @@ public class MessageQueue {
       this.notifyAll();
    }
 
-   public String take() throws InterruptedException {
+   public synchronized String take() throws InterruptedException {
       if (messages.isEmpty()) {
          this.wait();
       }
 
-      synchronized(this) {
-         String var1 = messages.get(0);
-         messages.remove(0);
-         return var1;
-      }
+      String var1 = messages.get(0);
+      messages.remove(0);
+      return var1;
+
    }
 }
