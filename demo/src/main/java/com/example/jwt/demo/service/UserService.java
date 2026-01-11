@@ -1,0 +1,104 @@
+package com.example.jwt.demo.service;
+
+
+import com.example.jwt.demo.dto.UserRequestDto;
+import com.example.jwt.demo.entity.User;
+import com.example.jwt.demo.repository.UserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+@Service
+public class UserService {
+
+    private final AuthenticationManager authenticationManager;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtUtil jwtUtil;
+
+    private static final Logger logger = LoggerFactory.getLogger(UserService.class);
+
+    public UserService(JwtUtil jwtUtil,AuthenticationManager authenticationManager,UserRepository userRepository,PasswordEncoder passwordEncoder){
+        this.authenticationManager = authenticationManager;
+        this.passwordEncoder = passwordEncoder;
+        this.userRepository = userRepository;
+        this.jwtUtil = jwtUtil;
+    }
+
+    public ResponseEntity<?> login(UserRequestDto userRequestDto) {
+        try {
+            Authentication auth = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            userRequestDto.getUsername(),
+                            userRequestDto.getPassword()
+                    )
+            );
+
+            UserDetails userDetails = (UserDetails) auth.getPrincipal();
+            String token = jwtUtil.generateToken(userDetails);
+
+            logger.info("successful login by {}",userRequestDto.getUsername());
+
+            return ResponseEntity.ok(Map.of("token", token));
+        }catch (Exception e){
+            System.out.println(e.getMessage());
+            throw e;
+        }
+    }
+
+    public ResponseEntity<?> addUser(UserRequestDto userRequestDto) {
+        Optional<User> isUserExists = userRepository.findByUsername(userRequestDto.getUsername());
+        if(isUserExists.isPresent()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User Already Exits with Username :" + userRequestDto.getUsername());
+        }
+
+        User user = new User();
+        user.setUsername(userRequestDto.getUsername());
+        user.setPassword(passwordEncoder.encode(userRequestDto.getPassword()));
+        user.setRoles(List.of("ROLE_BASIC"));
+
+        User savedUser = userRepository.save(user);
+        return ResponseEntity.status(HttpStatus.CREATED).body("User created successfully");
+    }
+
+    public ResponseEntity<?> addRoleAdmin(String username) {
+
+            Optional<User> isUserExists = userRepository.findByUsername(username);
+            if(isUserExists.isEmpty()){
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not Exits with Username :" + username);
+            }
+
+            Optional<User> optionalUser = userRepository.findByUsername(username);
+            User user = optionalUser.get();
+
+            // Avoid duplicate role
+            if (user.getRoles().contains("ROLE_ADMIN")) {
+                return ResponseEntity
+                        .status(HttpStatus.BAD_REQUEST)
+                        .body("User is already an ADMIN");
+            }
+
+            List<String> updatedRoles = new ArrayList<>(user.getRoles());
+            updatedRoles.add("ROLE_ADMIN");
+            user.setRoles(updatedRoles);
+
+            userRepository.save(user);
+
+            return ResponseEntity.ok(
+                    "User " + username + " promoted to ADMIN");
+
+    }
+}
