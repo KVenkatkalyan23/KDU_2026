@@ -27,7 +27,6 @@ public class BookController {
         return bookService.addBook(bookRequestDto);
     }
 
-
     @GetMapping("/books")
     public ResponseEntity<Page<Book>> getBooksByAuthor(
             @RequestParam(required = true) String author,
@@ -35,14 +34,12 @@ public class BookController {
             @RequestParam(defaultValue = "asc") String sort){
 
         return bookService.getBooksByAuthor(author,page,sort);
-
     }
 
     @GetMapping()
     public ResponseEntity<?> getBooks(){
         return bookService.getBooks();
     }
-
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getBook(@PathVariable Long id){

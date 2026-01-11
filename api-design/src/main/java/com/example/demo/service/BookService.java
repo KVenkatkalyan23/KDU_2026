@@ -5,6 +5,8 @@ import com.example.demo.controller.BookController;
 import com.example.demo.dto.BookRequestDto;
 import com.example.demo.entity.Book;
 import com.example.demo.repository.BookRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -12,10 +14,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 import java.util.Optional;
@@ -26,7 +25,9 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 @Service
 public class BookService {
 
+
     private final BookRepository bookRepository;
+    private static final Logger logger = LoggerFactory.getLogger(BookService.class);
 
     public BookService(BookRepository bookRepository){
         this.bookRepository = bookRepository;
@@ -41,6 +42,10 @@ public class BookService {
         Book book = new Book();
         book.setAuthor(bookRequestDto.getAuthor());
         book.setTitle(bookRequestDto.getTitle());
+
+        logger.info("New book added: Title='{}', Author='{}'",
+                book.getTitle(),
+                book.getAuthor());
 
         Book savedBook = bookRepository.save(book);
         return ResponseEntity.status(HttpStatus.CREATED).body("Book saved");
@@ -101,16 +106,19 @@ public class BookService {
     }
 
     public ResponseEntity<?> getBook(Long id) {
-
-        Book book = bookRepository.findById(id).orElseThrow();
-
-        EntityModel<Book> model = EntityModel.of(
-                book,
-                linkTo(methodOn(BookController.class).getBook(id)).withSelfRel(),
-                linkTo(methodOn(BookController.class).getBooks()).withRel("all-books"),
-                linkTo(methodOn(BookController.class).deleteBook(id)).withRel("delete")
-        );
-
-        return ResponseEntity.ok(model);
+        try {
+            Book book = bookRepository.findById(id).orElseThrow(() -> new RuntimeException("No book found with : " + id));
+            EntityModel<Book> model = EntityModel.of(
+                    book,
+                    linkTo(methodOn(BookController.class).getBook(id)).withSelfRel(),
+                    linkTo(methodOn(BookController.class).getBooks()).withRel("all-books"),
+                    linkTo(methodOn(BookController.class).deleteBook(id)).withRel("delete")
+            );
+            return ResponseEntity.ok(model);
+        }catch (Exception e){
+            logger.error("Error occurred while searching for book with title '{}'",
+                    id, e);
+            throw e;
+        }
     }
 }
