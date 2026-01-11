@@ -6,11 +6,18 @@ import com.jwtAuth.demo.entity.User;
 import com.jwtAuth.demo.repository.UserRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -18,10 +25,13 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder){
+    private final AuthenticationManager authenticationManager;
+    private final JwtUtil jwtUtil;
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder,JwtUtil jwtUtil,AuthenticationManager authenticationManager){
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.jwtUtil = jwtUtil;
+        this.authenticationManager = authenticationManager;
     }
 
     public ResponseEntity<?> signup(UserRequestDto userRequestDto) {
@@ -63,5 +73,20 @@ public class UserService {
 
         return ResponseEntity.ok(
                 "User " + username + " promoted to ADMIN");
+    }
+
+    public ResponseEntity<?> login( UserRequestDto request) {
+
+        Authentication auth = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        request.getUsername(),
+                        request.getPassword()
+                )
+        );
+
+        UserDetails userDetails = (UserDetails) auth.getPrincipal();
+        String token = jwtUtil.generateToken(userDetails);
+
+        return ResponseEntity.ok(Map.of("token", token));
     }
 }
