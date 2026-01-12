@@ -21,7 +21,6 @@ public class User implements UserDetails {
 
     private List<String> roles;
 
-
     public String getUsername() {
         return username;
     }

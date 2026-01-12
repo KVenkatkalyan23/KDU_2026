@@ -16,10 +16,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class UserService {
@@ -39,6 +36,9 @@ public class UserService {
     }
 
     public ResponseEntity<?> login(UserRequestDto userRequestDto) {
+        if(userRequestDto.getUsername().isEmpty() || userRequestDto.getPassword().isEmpty()){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Username and password should not be empty");
+        }
         try {
             Authentication auth = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
@@ -60,45 +60,51 @@ public class UserService {
     }
 
     public ResponseEntity<?> addUser(UserRequestDto userRequestDto) {
+        if(userRequestDto.getUsername().isEmpty() || userRequestDto.getPassword().isEmpty()){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Username and password should not be empty");
+        }
+
+        // check if user already exists
         Optional<User> isUserExists = userRepository.findByUsername(userRequestDto.getUsername());
         if(isUserExists.isPresent()){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User Already Exits with Username :" + userRequestDto.getUsername());
         }
-
         User user = new User();
         user.setUsername(userRequestDto.getUsername());
         user.setPassword(passwordEncoder.encode(userRequestDto.getPassword()));
-        user.setRoles(List.of("ROLE_BASIC"));
+        user.setRoles(List.of("ROLE_DRIVER"));
 
         User savedUser = userRepository.save(user);
         return ResponseEntity.status(HttpStatus.CREATED).body("User created successfully");
     }
 
     public ResponseEntity<?> addRoleAdmin(String username) {
-
+            if(username.isEmpty()){
+               return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Username required");
+            }
             Optional<User> isUserExists = userRepository.findByUsername(username);
             if(isUserExists.isEmpty()){
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not Exits with Username :" + username);
             }
 
-            Optional<User> optionalUser = userRepository.findByUsername(username);
+            Optional<User> optionalUser = userRepository.findByUsername(username); // fetch users from database
             User user = optionalUser.get();
 
             // Avoid duplicate role
-            if (user.getRoles().contains("ROLE_ADMIN")) {
+            if (user.getRoles().contains("ROLE_MANAGER")) {
                 return ResponseEntity
                         .status(HttpStatus.BAD_REQUEST)
                         .body("User is already an ADMIN");
             }
 
             List<String> updatedRoles = new ArrayList<>(user.getRoles());
-            updatedRoles.add("ROLE_ADMIN");
+            updatedRoles.add("ROLE_MANAGER");
             user.setRoles(updatedRoles);
 
             userRepository.save(user);
 
             return ResponseEntity.ok(
-                    "User " + username + " promoted to ADMIN");
+                    "User " + username + " promoted to MANAGER");
 
     }
 }

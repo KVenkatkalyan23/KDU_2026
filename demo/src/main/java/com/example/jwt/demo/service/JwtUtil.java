@@ -1,5 +1,6 @@
 package com.example.jwt.demo.service;
 
+import com.example.jwt.demo.constant.Constants;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -20,7 +21,7 @@ import java.util.stream.Collectors;
 public class JwtUtil {
 
     // Use a constant key (at least 256-bit for HS256)
-    private static final String SECRET_KEY = "my_super_secret_key_which_is_at_least_256_bits_long_123!gfghdfxdf";
+    private static final String SECRET_KEY = Constants.SECRET_KEY;
 
     private Key getSigningKey() {
         return Keys.hmacShaKeyFor(SECRET_KEY.getBytes(StandardCharsets.UTF_8));

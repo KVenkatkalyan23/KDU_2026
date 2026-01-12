@@ -31,13 +31,8 @@ public class UserController {
     }
 
     @PutMapping("/add-role")
-    public ResponseEntity<?> addRoleAdmin(@RequestBody String username){
+    public ResponseEntity<?> addRoleManager(@RequestBody String username){
         return userService.addRoleAdmin(username);
     }
 
-    @GetMapping()
-    @PreAuthorize("hasRole('ADMIN')")
-    public String getData(){
-        return "hello";
-    }
 }
