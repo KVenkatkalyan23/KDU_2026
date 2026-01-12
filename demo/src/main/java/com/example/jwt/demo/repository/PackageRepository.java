@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface PackageRepository extends JpaRepository<PackageClass, Integer> {
 
-    // will fetch all the packages with status sortec
+    // will fetch all the packages with status sorted
     @Query(value = "SELECT P FROM PackageClass P WHERE status = 'SORTED'")
     public List<PackageClass> getPackagesWithStatusSorted();
 }

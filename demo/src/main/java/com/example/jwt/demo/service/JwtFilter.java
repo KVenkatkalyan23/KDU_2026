@@ -34,7 +34,6 @@ public class JwtFilter extends OncePerRequestFilter {
         if (header != null && header.startsWith("Bearer ")) {
             String token = header.substring(7);
 
-            try {
                 String username = jwtUtil.extractUsername(token);
 
                 if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
@@ -55,10 +54,8 @@ public class JwtFilter extends OncePerRequestFilter {
                     }
                 }
 
-            } catch (Exception e) {
-                System.out.println("JWT validation failed: " + e.getMessage());
             }
-        }
+
 
         filterChain.doFilter(request, response);
     }
