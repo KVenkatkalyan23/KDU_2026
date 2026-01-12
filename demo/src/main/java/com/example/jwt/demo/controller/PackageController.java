@@ -4,7 +4,6 @@ package com.example.jwt.demo.controller;
 import com.example.jwt.demo.dto.PackageRequestDto;
 import com.example.jwt.demo.entity.PackageClass;
 import com.example.jwt.demo.service.PackageService;
-import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;

@@ -1,19 +1,27 @@
 package com.example.jwt.demo.dto;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 
 public class PackageRequestDto {
 
     @NotBlank
     private String destination;
 
-    @NotBlank()
+    @NotBlank
     private Double weight;
 
     @NotBlank
+    @Pattern(
+            regexp = "PENDING|SORTED",
+            message = "Delivery type must be either STANDARD or EXPRESS"
+    )
     private String status;
-
-    @NotBlank
+    @NotBlank(message = "Delivery type must not be blank")
+    @Pattern(
+            regexp = "STANDARD|EXPRESS",
+            message = "Delivery type must be either STANDARD or EXPRESS"
+    )
     private String deliveryType;
 
     public @NotBlank String getDestination() {
