@@ -1,6 +1,8 @@
 package com.example.demo.dto;
 
 public class UserRequestDto {
+    private Integer id;
+
     private String username;
 
     private Boolean logged_in_status;
@@ -8,6 +10,22 @@ public class UserRequestDto {
     private String timezone;
 
     private Integer tenant_id;
+
+    public UserRequestDto(Integer id, String username, Boolean logged_in_status, String timezone, Integer tenant_id) {
+        this.id = id;
+        this.username = username;
+        this.logged_in_status = logged_in_status;
+        this.timezone = timezone;
+        this.tenant_id = tenant_id;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
     public String getUsername() {
         return username;
