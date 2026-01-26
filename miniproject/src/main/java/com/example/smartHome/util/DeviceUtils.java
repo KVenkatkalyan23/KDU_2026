@@ -1,7 +1,7 @@
 package com.example.smartHome.util;
 
-import com.example.smartHome.dto.DeviceDtos.DeviceResponseDto;
 import com.example.smartHome.dto.DeviceDtos.DeviceRequestDto;
+import com.example.smartHome.dto.DeviceDtos.DeviceResponseDto;
 import com.example.smartHome.entity.Device;
 
 import java.time.LocalDateTime;

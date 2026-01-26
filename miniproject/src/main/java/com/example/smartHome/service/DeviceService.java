@@ -14,8 +14,6 @@ import com.example.smartHome.exception.InvalidAttachmentException;
 import com.example.smartHome.exception.InvalidDeviceCredentialsException;
 import com.example.smartHome.repository.DeviceInventoryRepository;
 import com.example.smartHome.repository.DeviceRepository;
-import com.example.smartHome.repository.HouseRepository;
-import com.example.smartHome.repository.RoomRepository;
 import com.example.smartHome.util.DeviceUtils;
 import com.example.smartHome.util.Utils;
 import jakarta.transaction.Transactional;

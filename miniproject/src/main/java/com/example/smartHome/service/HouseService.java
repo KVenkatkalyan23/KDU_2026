@@ -116,7 +116,7 @@ public class HouseService {
 
         String currentUser = utils.getCurrentUsername();
         if (!currentUser.equals(house.getAdmin())) {
-            throw new AccessDeniedException("Only house admin can attach devices");
+            throw new AccessDeniedException("Only house admin can Update the House");
         }
 
         house.setHouseName(houseUpdateRequestDto.getHouseName());

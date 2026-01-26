@@ -30,7 +30,7 @@ public class RoomService {
         String currentUsername = utils.getCurrentUsername();
         House house = utils.getHouseById(roomRequestDto.getHouseId());
         if(!house.getAdmin().equals(currentUsername)){
-            throw new AccessDeniedException("User should be Admin of the house to transfer Ownership");
+            throw new AccessDeniedException("User should be Admin to add room to house");
         }
         Room room = RoomUtils.mapRoomRequestDtoToRoom(roomRequestDto);
         room.setHouse(house);

@@ -4,7 +4,6 @@ import com.example.smartHome.controller.DeviceController;
 import com.example.smartHome.dto.DeviceDtos.AddDeviceToRoomRequestDto;
 import com.example.smartHome.service.DeviceService;
 import com.example.smartHome.util.JwtFilter;
-import com.example.smartHome.util.JwtUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -13,7 +12,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.UUID;
@@ -30,7 +28,6 @@ class DeviceControllerTest {
 
     @MockBean
     private DeviceService deviceService;
-
 
     @Autowired
     private ObjectMapper objectMapper;

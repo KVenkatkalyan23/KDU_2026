@@ -16,6 +16,5 @@ public class AddUserToHouseRequest {
     @NotBlank(message = "Username is required")
     private String username;
 
-    @NotBlank(message = "houseId must not be empty")
     private UUID houseId;
 }
