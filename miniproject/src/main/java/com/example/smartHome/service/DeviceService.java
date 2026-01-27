@@ -52,6 +52,10 @@ public class DeviceService {
             throw new DeviceRegisteredException("Device had been registered already");
         }
 
+        if(!deviceInventory.getDeviceUsername().equals(deviceRequestDto.getDeviceUsername())){
+            throw new InvalidDeviceCredentialsException("Invalid Device Username");
+        }
+
         if (!passwordEncoder.matches(
                 deviceRequestDto.getDevicePassword(),
                 deviceInventory.getDevicePassword()
